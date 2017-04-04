@@ -14,5 +14,5 @@ Spitfire.FixFalseAlt(184,608)
 maxvalue=max([x.get("Throttle") for x in Spitfire.datapoints])
 Spitfire.FilterPoints((lambda point:point.get('Throttle')==maxvalue))
 for i in range(10):
-    print(Spitfire.datapoints[1000+i])
+    print(Spitfire.datapoints[i])
 # print(Spitfire.datapoints[-1])

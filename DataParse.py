@@ -23,7 +23,7 @@ class Datapoint:
         return float(self.data[self.fields.index(name)])
     def set(self,name:str,value:float):
         self.data[self.fields.index(name)]=value
-    def out(self):
+    def out(self)->list:
         return [(self.fields[i],self.data[i],self.units[i]) for i in range(len(self.data))]
     def __str__(self)->str:
         return str(["{}:{} {}".format(x[0],x[1],x[2]) for x in self.out()])
@@ -43,11 +43,16 @@ class Data:
         self.rawdata=FilterOnly(names,self.rawdata)
         self.data = self.rawdata[1:]
         self.fieldnames = self.rawdata[0]
+    def NormalizeTime(self):
+        starttime=self.datapoints[0].get("Time")
+        for point in self.datapoints:
+            point.set("Time",round(point.get("Time")-starttime,2))
     def FilterPoints(self,F):
         newpoints=[]
         for i,point in enumerate(self.datapoints):
             if F(point):newpoints.append(point)
         self.datapoints=newpoints
+        self.NormalizeTime()
     def FixFalseAlt(self,truevalue,falsevalue):
         for i, point in enumerate(self.datapoints):
             if point.get("Altitude") != falsevalue:
