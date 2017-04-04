@@ -2,7 +2,7 @@ def Parsefile(filename: str)-> list:
     Lines=[]
     with open(filename,'r') as File:
         for line in File:
-            Lines.append(line.split(",")[:-1])
+            if len(line)>1:Lines.append(line.split(",")[:-1])
     return Lines
 def FilterOnly(names:list,parsedfile:list)->list:
     tokeep=[]
@@ -35,6 +35,7 @@ class Data:
         self.rawdata=Parsefile(filename)
         self.data=self.rawdata[1:]
         self.fieldnames=self.rawdata[0]
+        self.name="Someplane"
     def GenerateDataPoints(self):
         self.datapoints=[]
         for line in self.data:
@@ -53,9 +54,25 @@ class Data:
             if F(point):newpoints.append(point)
         self.datapoints=newpoints
         self.NormalizeTime()
+    def setname(self,string:str):
+        self.name=string
     def FixFalseAlt(self,truevalue,falsevalue):
         for i, point in enumerate(self.datapoints):
             if point.get("Altitude") != falsevalue:
                 break
             else:
                 point.set("Altitude", truevalue)
+    def plotClimbrate(self):
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(15, 9))
+        plt.ylim(10, 35)
+        plt.xlim(250,6000)
+        plt.plot([x.get("Altitude") for x in self.datapoints], [x.get("Vario") for x in self.datapoints])
+        plt.savefig(self.name+" Climb rate.png", bbox_inches="tight")
+    def plotPowertoAlt(self):
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(15, 9))
+        plt.ylim(100, max([x.get("Power") for x in self.datapoints]))
+        plt.xlim(250,6000)
+        plt.plot([x.get("Altitude") for x in self.datapoints], [x.get("Power") for x in self.datapoints])
+        plt.savefig(self.name+" Power diagram.png", bbox_inches="tight")
