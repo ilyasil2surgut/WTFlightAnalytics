@@ -1,4 +1,4 @@
-import DataParse,datagrabber
+import DataParse,datagrabber,time
 """
 names = ['Time/s', 'Throttle/%', 'IAS/kph', 'TAS/kph', 'Altitude/m', 'Vario/m/s','SEP*/m/s', 'Power/bhp', 'EffectivePower*/bhp', 'Compressor/stage']
 Spitfire=DataParse.Data("C:/Users/ilyas_000/SkyDrive/Documents/SPITFIRE_IX_4_4_7.33.50 20fuel.csv")
@@ -31,4 +31,14 @@ plt.plot([x.get("Altitude") for x in Spitfire.datapoints], [x.get("Vario") for x
 plt.plot([x.get("Altitude") for x in Tempest.datapoints], [x.get("Vario") for x in Tempest.datapoints])
 plt.savefig("TempestvsSpit.png", bbox_inches="tight")
 """
+def calculateenergy(data:dict)->float:
+    return data['altitude_hour']*9.81+(data["TAS, km/h"]/3.6)**2/2
 
+a={}
+old=0
+for i in range(500):
+    a=datagrabber.retrievedata()
+    en=round(calculateenergy(a))
+    print(en,en-old,round(a['altitude_hour']),a["TAS, km/h"])
+    old=en
+    time.sleep(1)
